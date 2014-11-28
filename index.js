@@ -2,6 +2,11 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+// Supposed to help with css, but not working
+// app.use("/css", express.static(__dirname + '/css'));
+
+console.log(__dirname);
+
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
