@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>Socket.IO chat</title>
+  <title>Indie Mix 2.0</title>
   <style>
       * { 
         margin: 0; 
@@ -52,6 +52,7 @@
   <body>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <h1>Welcome to Moosetown</h1>
     <ul id="messages"></ul>
     <form action="" class="">
       <input id="m" autocomplete="off"><button>Send</button>
@@ -59,10 +60,17 @@
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+      var noNames = ["goober","monkeybat","moosejamms","grumpkin","derf-pooper","roosta","sounddrooper","tacobreath","lolwut","uncle jemima","front-door farter","carseat","air conditioner","lint roller","butterscotch krumpet","tuba repairman","pocket salesman","car door inspector","used gum aficionado","k-pop fanatic","beer ombudsman","big bird impersonator","graffiti stain","wisdom tooth","ignorance tooth","pocket harmonica"];
+      var defaultName = noNames[Math.floor(Math.random() * noNames.length)];
       var socket = io();
       $('form').submit(function(){
-        var msg = $('#m').val();
-        var name = $("#name").val() + ": ";
+        var msg = $('#m').val(),
+            name;
+        if ($('#name').val() !== '') {
+          name = $("#name").val() + ": ";
+        } else {
+          name = "nameless " + defaultName + ": ";
+        }
         socket.emit('chat message', name + msg);
         $('#m').val('');
         return false;
