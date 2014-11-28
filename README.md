@@ -1,1 +1,1 @@
-a node chattin' app
+a node chattin' app... for friends
