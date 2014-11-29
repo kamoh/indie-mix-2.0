@@ -11,6 +11,14 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
+  socket.on('sign on', function(name){
+    io.emit('someone joined', name);
+    console.log(name + ' joined the chat');
+  });
+  socket.on('sync user list', function(listOfNames){
+    io.emit('sync user list', listOfNames);
+    console.log('syncing user names');
+  });
   socket.on('chat message', function(msg){
     io.emit('chat message', msg);
     console.log('message: ' + msg);

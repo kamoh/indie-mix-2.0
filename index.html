@@ -46,6 +46,8 @@
       margin: 0; 
       padding: 0; 
       width: 80%;
+      overflow: scroll;
+      height: 400px;
     }
     #messages li { 
       padding: 5px 10px; 
@@ -79,10 +81,32 @@
     </form>
     <!-- <script src="/socket.io/socket.io.js"></script> -->
     <script type="text/javascript">
+
       var noNames = ["goober","monkeybat","moosejamms","grumpkin","derf-pooper","roosta","sounddrooper","tacobreath","lolwut","uncle jemima","front-door farter","carseat","air conditioner","lint roller","butterscotch krumpet","tuba repairman","pocket salesman","car door inspector","used gum aficionado","k-pop fanatic","beer ombudsman","big bird impersonator","graffiti stain","wisdom tooth","ignorance tooth","pocket harmonica"],
           defaultName = noNames[Math.floor(Math.random() * noNames.length)],
-          socket = io();
+          socket = io(),
+          listOfNames = []; // User's list of all other users in the room
+      
+      // Upon user's initial sign-on
+      
+      socket.emit('sign on', defaultName);
+      
+      // When someone else joins
+      
+      socket.on('someone joined', function(name){
+        var $lis = $("#roll-call li");
+        for(var i = 0; i < $lis; i++) {
+          listOfNames.push($lis.eq(i).text());
+        }
+        socket.emit('sync user list', listOfNames); // 
+      });
+      socket.on('sync user list', function(nameListFromOthers){
+        listOfNames = listOfNames.concat(nameListFromOthers);
+
+      });
+
       // Add name to roll call box
+
       $('#roll-call').append('<li>' + defaultName + '</li>')
       $('form').submit(function(){
         var msg = $('#m').val(),
@@ -99,29 +123,25 @@
         $('#m').val('');
         return false;
       });
+
       // Name management for the roll call box when changing names
+
       $('#name').change(function(){
-        // var $lis = $('#roll-call li'); 
-        // console.log("in change function");
-        // for (var i = 0; i < $lis.length; i++) {
-        //   console.log('looping through lis: ' + i);
-        //   if ($lis.eq(i).text() === defaultName) {
-        //     $lis.eq(i).remove();
-        //   }
-        // }
         var newName = $('#name').val();
-        // $('#roll-call').append('<li>' + defaultName + '</li>')
         socket.emit('name change', defaultName, newName);
         defaultName = newName;
-        // var $names = $('#name');
-        // for(var i = 0; i < $names.length; i++) {
-        //   $names[i].text() === 
-        // }
       })
+
+      // Emitter for sending chat messages
+
       socket.on('chat message', function(msg){
         console.log("received message '" + msg + "'");
         $('#messages').append($('<li>').text(msg));
+        document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
       });
+
+      // Propagate name changes to other users
+
       socket.on('name change', function(oldName, replaceName){
         var $lis = $('#roll-call li'); 
         console.log("in change function");
