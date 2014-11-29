@@ -157,7 +157,7 @@
         $('#roll-call').append('<li>' + replaceName + '</li>')
       });
 
-      // When a user leaves
+      // When a user leaves the chat
 
       socket.on('user left', function(leavingUserName) {
         // remove the user's name via broadcast
