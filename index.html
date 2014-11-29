@@ -45,6 +45,7 @@
       list-style-type: none; 
       margin: 0; 
       padding: 0; 
+      width: 80%;
     }
     #messages li { 
       padding: 5px 10px; 
@@ -52,28 +53,45 @@
     #messages li:nth-child(odd) { 
       background: #eee; 
     }
+    #roll-call {
+      float: right;
+      width: 19%;
+      height: 300px;
+      overflow: scroll;
+      border: 2px #EEE solid;
+      margin-right: 6px;
+      padding: 6px;
+    }
 </style>
   </head>
   <body>
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="public/js/chat.js"></script>
     <h1>Welcome to Moosetown</h1>
+    <div>
+      <div id="roll-call">Roll Call</div>
+    </div>
     <ul id="messages"></ul>
     <form action="" class="">
       <input id="m" autocomplete="off"><button>Send</button>
       <input id="name" autocomplete="off" placeholder="your name">
     </form>
     <!-- <script src="/socket.io/socket.io.js"></script> -->
-    <script>
-      var noNames = ["goober","monkeybat","moosejamms","grumpkin","derf-pooper","roosta","sounddrooper","tacobreath","lolwut","uncle jemima","front-door farter","carseat","air conditioner","lint roller","butterscotch krumpet","tuba repairman","pocket salesman","car door inspector","used gum aficionado","k-pop fanatic","beer ombudsman","big bird impersonator","graffiti stain","wisdom tooth","ignorance tooth","pocket harmonica"];
-      var defaultName = noNames[Math.floor(Math.random() * noNames.length)];
-      var socket = io();
+    <script type="text/javascript">
+      var noNames = ["goober","monkeybat","moosejamms","grumpkin","derf-pooper","roosta","sounddrooper","tacobreath","lolwut","uncle jemima","front-door farter","carseat","air conditioner","lint roller","butterscotch krumpet","tuba repairman","pocket salesman","car door inspector","used gum aficionado","k-pop fanatic","beer ombudsman","big bird impersonator","graffiti stain","wisdom tooth","ignorance tooth","pocket harmonica"],
+          defaultName = noNames[Math.floor(Math.random() * noNames.length)],
+          socket = io();
+      // Add name to roll call box
+      $('#roll-call').append('<li>' + defaultName + '</li>')
       $('form').submit(function(){
         var msg = $('#m').val(),
             name;
+        // If user specified a name, use that
         if ($('#name').val() !== '') {
           name = $("#name").val() + ": ";
         } else {
+        // If user didn't specify a name, use the generated one
           name = "nameless " + defaultName + ": ";
         }
         socket.emit('chat message', name + msg);
@@ -81,10 +99,42 @@
         $('#m').val('');
         return false;
       });
+      // Name management for the roll call box when changing names
+      $('#name').change(function(){
+        // var $lis = $('#roll-call li'); 
+        // console.log("in change function");
+        // for (var i = 0; i < $lis.length; i++) {
+        //   console.log('looping through lis: ' + i);
+        //   if ($lis.eq(i).text() === defaultName) {
+        //     $lis.eq(i).remove();
+        //   }
+        // }
+        var newName = $('#name').val();
+        // $('#roll-call').append('<li>' + defaultName + '</li>')
+        socket.emit('name change', defaultName, newName);
+        defaultName = newName;
+        // var $names = $('#name');
+        // for(var i = 0; i < $names.length; i++) {
+        //   $names[i].text() === 
+        // }
+      })
       socket.on('chat message', function(msg){
         console.log("received message '" + msg + "'");
         $('#messages').append($('<li>').text(msg));
       });
+      socket.on('name change', function(oldName, replaceName){
+        var $lis = $('#roll-call li'); 
+        console.log("in change function");
+        for (var i = 0; i < $lis.length; i++) {
+          console.log('looping through lis: ' + i);
+          if ($lis.eq(i).text() === oldName) {
+            console.log('replacing ' + oldName + ' with ' + replaceName);
+            $lis.eq(i).remove();
+          }
+        }
+        $('#roll-call').append('<li>' + replaceName + '</li>')
+      });
     </script>
   </body>
 </html>
+
