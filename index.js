@@ -24,7 +24,8 @@ io.on('connection', function(socket){
     console.log('message: ' + msg);
   });
   console.log('a user connected');
-  socket.on('disconnect', function(){
+  socket.on('disconnect', function(defaultName){
+    io.emit('user left', defaultName);
     console.log('user disconnected');
   });
   socket.on('name change', function(defaultName, newName){

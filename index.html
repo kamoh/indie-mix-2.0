@@ -87,6 +87,8 @@
           socket = io(),
           listOfNames = []; // User's list of all other users in the room
       
+      socket.emit('name change', "", defaultName);
+
       // Upon user's initial sign-on
       
       socket.emit('sign on', defaultName);
@@ -107,7 +109,7 @@
 
       // Add name to roll call box
 
-      $('#roll-call').append('<li>' + defaultName + '</li>')
+      // $('#roll-call').append('<li>' + defaultName + '</li>')
       $('form').submit(function(){
         var msg = $('#m').val(),
             name;
@@ -154,6 +156,12 @@
         }
         $('#roll-call').append('<li>' + replaceName + '</li>')
       });
+
+      // When a user leaves
+
+      socket.on('user left', function(leavingUserName) {
+        // remove the user's name via broadcast
+      })
     </script>
   </body>
 </html>
