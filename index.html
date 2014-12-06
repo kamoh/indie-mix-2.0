@@ -52,6 +52,9 @@
     #messages li { 
       padding: 5px 10px; 
     }
+    #messages li.italic{ 
+      font-style: italic;
+    }
     #messages li:nth-child(odd) { 
       background: #eee; 
     }
@@ -100,11 +103,19 @@
         for(var i = 0; i < $lis; i++) {
           listOfNames.push($lis.eq(i).text());
         }
+        appendMessage("li class='italic'", name + " endtered this thing");
         socket.emit('sync user list', listOfNames); // 
       });
       socket.on('sync user list', function(nameListFromOthers){
         listOfNames = listOfNames.concat(nameListFromOthers);
 
+      });
+
+      // When someone joins, add a '[name] has entered' message
+
+      socket.on('entered room', function(defaultName){
+        // socket.emit('display welcome msg', defaultName)
+        console.log(defaultName + ' enturred');
       });
 
       // Add name to roll call box
@@ -137,10 +148,14 @@
       // Emitter for sending chat messages
 
       socket.on('chat message', function(msg){
-        console.log("received message '" + msg + "'");
-        $('#messages').append($('<li>').text(msg));
-        document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+        console.log("received message " + msg + "'");
+        appendMessage('li', msg);
       });
+
+      function appendMessage(li_style, msg){
+        $('#messages').append($('<' + li_style + '>').text(msg));
+        document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+      };
 
       // Propagate name changes to other users
 

@@ -11,9 +11,13 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
+  // socket.broadcast.emit('entered room');
   socket.on('sign on', function(name){
     io.emit('someone joined', name);
     console.log(name + ' joined the chat');
+  });
+  socket.on('display welcome msg', function(defaultName){
+    console.log(defaultName + ' has entered yep')
   });
   socket.on('sync user list', function(listOfNames){
     io.emit('sync user list', listOfNames);
