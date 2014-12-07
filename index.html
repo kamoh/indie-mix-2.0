@@ -86,10 +86,12 @@
     <script type="text/javascript">
 
       var noNames = ["goober","monkeybat","moosejamms","grumpkin","derf-pooper","roosta","sounddrooper","tacobreath","lolwut","uncle jemima","front-door farter","carseat","air conditioner","lint roller","butterscotch krumpet","tuba repairman","pocket salesman","car door inspector","used gum aficionado","k-pop fanatic","beer ombudsman","big bird impersonator","graffiti stain","wisdom tooth","ignorance tooth","pocket harmonica"],
-          defaultName = noNames[Math.floor(Math.random() * noNames.length)],
+          defaultName = noNames[Math.floor(Math.random() * noNames.length)] + Math.floor(Math.random(1,9999)*1000),
           socket = io(),
           listOfNames = []; // User's list of all other users in the room
       
+      socket.name = defaultName;
+
       socket.emit('name change', "", defaultName);
 
       // Upon user's initial sign-on
@@ -103,19 +105,12 @@
         for(var i = 0; i < $lis; i++) {
           listOfNames.push($lis.eq(i).text());
         }
-        appendMessage("li class='italic'", name + " endtered this thing");
+        appendMessage("li class='italic'", this.name + " endtered this thing");
         socket.emit('sync user list', listOfNames); // 
       });
       socket.on('sync user list', function(nameListFromOthers){
         listOfNames = listOfNames.concat(nameListFromOthers);
 
-      });
-
-      // When someone joins, add a '[name] has entered' message
-
-      socket.on('entered room', function(defaultName){
-        // socket.emit('display welcome msg', defaultName)
-        console.log(defaultName + ' enturred');
       });
 
       // Add name to roll call box
@@ -143,6 +138,7 @@
         var newName = $('#name').val();
         socket.emit('name change', defaultName, newName);
         defaultName = newName;
+        socket.name = newName;
       })
 
       // Emitter for sending chat messages
@@ -174,7 +170,16 @@
 
       // When a user leaves the chat
 
-      socket.on('user left', function(leavingUserName) {
+      socket.on('disconnect', function(defaultName) {
+        console.log(defaultName + ' has exeunt');
+        // socket.emit('user exeunt', defaultName);
+        // appendMessage("li class='italic'", name + ' has left like a dooop');
+        // remove the user's name via broadcast
+      });
+
+      socket.on('user left', function(name) {
+        appendMessage("li class='italic'", name + ' has left like a dooop');
+        console.log(name + ' has exeunt');
         // remove the user's name via broadcast
       })
     </script>
