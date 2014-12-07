@@ -17,7 +17,7 @@
       font: 13px Helvetica, Arial; 
     }
     form { 
-      background: #000; 
+      background: #ffe4b2; 
       padding: 3px; 
       position: fixed; 
       bottom: 0; 
@@ -34,6 +34,7 @@
       border: 0;
       width: 10%;
       margin-right: .4%;
+      visibility: hidden;
     }
     form button { 
       width: 5%; 
@@ -88,29 +89,20 @@
       var noNames = ["goober","monkeybat","moosejamms","grumpkin","derf-pooper","roosta","sounddrooper","tacobreath","lolwut","uncle jemima","front-door farter","carseat","air conditioner","lint roller","butterscotch krumpet","tuba repairman","pocket salesman","car door inspector","used gum aficionado","k-pop fanatic","beer ombudsman","big bird impersonator","graffiti stain","wisdom tooth","ignorance tooth","pocket harmonica"],
           defaultName = noNames[Math.floor(Math.random() * noNames.length)] + Math.floor(Math.random(1,9999)*1000),
           socket = io(),
-          listOfNames = []; // User's list of all other users in the room
-      
-      socket.name = defaultName;
 
-      // Upon user's initial sign-on
+      defaultName = window.prompt("enter yo name",defaultName);
+
+      // Upon user's initial sign-on:
 
       socket.emit('sign on', defaultName);
 
-      // socket.emit('name change', "", defaultName);
-      
-      
       // When someone else joins
       
       socket.on('someone joined', function(name){
-        
-        // var $lis = $("#roll-call li");
-        // for(var i = 0; i < $lis; i++) {
-        //   listOfNames.push($lis.eq(i).text());
-        // }
         appendMessage("li class='italic'", name + " entered the room");
-        // socket.emit('sync user list', listOfNames); // 
       });
         
+      // Update user list using the server's user list
 
       socket.on('sync user list', function(nameListFromServer){
         var $lis = $("#roll-call");
@@ -122,6 +114,7 @@
       });
 
       // Add name to roll call box
+      // Currently unused - disabled the change name input
 
       // $('#roll-call').append('<li>' + defaultName + '</li>')
       $('form').submit(function(){
@@ -132,7 +125,7 @@
           name = $("#name").val() + ": ";
         } else {
         // If user didn't specify a name, use the generated one
-          name = "nameless " + defaultName + ": ";
+          name = defaultName + ": ";
         }
         socket.emit('chat message', name + msg);
         console.log("emitted message '" + msg + "'");
@@ -146,7 +139,6 @@
         var newName = $('#name').val();
         socket.emit('name change', defaultName, newName);
         defaultName = newName;
-        socket.name = newName;
       })
 
       // Emitter for sending chat messages
@@ -162,6 +154,7 @@
       };
 
       // Propagate name changes to other users
+      // Not in use - name change form disabled for now
 
       socket.on('name change', function(oldName, replaceName){
         var $lis = $('#roll-call li'); 
@@ -178,18 +171,14 @@
 
       // When a user leaves the chat
 
-      socket.on('disconnect', function(defaultName) {
-        console.log(defaultName + ' has exeunt');
-        // socket.emit('user exeunt', defaultName);
-        // appendMessage("li class='italic'", name + ' has left like a dooop');
-        // remove the user's name via broadcast
-      });
+      var leftMessages = ['ran out screaming','exploded nicely','evaporated into sierra mist','left to go poop','peaced out','was terminated','kicked the computer and it burst into flames and is now gone forever','went to eat five burritos','went to walk the parrot','left to buy a shoe','left like a doophead','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room'],
+      leftMsg = leftMessages[Math.floor(Math.random() * leftMessages.length)];
 
       socket.on('user left', function(name) {
-        appendMessage("li class='italic'", name + ' has left like a dooop');
+        appendMessage("li class='italic'", name + " " + leftMsg);
         console.log(name + ' has exeunt');
-        // remove the user's name via broadcast
-      })
+      });
+
     </script>
   </body>
 </html>
