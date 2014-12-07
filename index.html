@@ -92,25 +92,33 @@
       
       socket.name = defaultName;
 
-      socket.emit('name change', "", defaultName);
-
       // Upon user's initial sign-on
-      
+
       socket.emit('sign on', defaultName);
+
+      // socket.emit('name change', "", defaultName);
+      
       
       // When someone else joins
       
       socket.on('someone joined', function(name){
-        var $lis = $("#roll-call li");
-        for(var i = 0; i < $lis; i++) {
-          listOfNames.push($lis.eq(i).text());
-        }
-        appendMessage("li class='italic'", this.name + " endtered this thing");
-        socket.emit('sync user list', listOfNames); // 
+        
+        // var $lis = $("#roll-call li");
+        // for(var i = 0; i < $lis; i++) {
+        //   listOfNames.push($lis.eq(i).text());
+        // }
+        appendMessage("li class='italic'", this.name + " entered the room");
+        // socket.emit('sync user list', listOfNames); // 
       });
-      socket.on('sync user list', function(nameListFromOthers){
-        listOfNames = listOfNames.concat(nameListFromOthers);
+        
 
+      socket.on('sync user list', function(nameListFromServer){
+        var $lis = $("#roll-call");
+        $lis.empty();
+        $lis.append("Roll Call");
+        for(var i = 0; i < nameListFromServer.length; i++) {
+          $lis.append('<li>' + nameListFromServer[i] + '</li/>');
+        }
       });
 
       // Add name to roll call box
