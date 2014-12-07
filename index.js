@@ -32,7 +32,9 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     console.log(socket.name + ' has discon7nected');
     updateServerListUserLeft(socket.name, allClients);
-    io.sockets.emit('user left', socket.name);
+    var leftMsg = userLeftMessage(),
+        args = [socket.name, leftMsg];
+    io.sockets.emit('user left', args);
     console.log('clinet list after user left: ' + allClients.toString());
   })
   
@@ -72,6 +74,13 @@ io.on('connection', function(socket){
     io.sockets.emit('sync user list', clientList);
     console.log('currnet users: ' + clientList.toString());
   };
+
+  function userLeftMessage() {
+    var leftMessages = ['ran out screaming','exploded nicely','evaporated into sierra mist','left to go poop','peaced out','was terminated','kicked the computer and it burst into flames and is now gone forever','went to eat five burritos','went to walk the parrot','left to buy a shoe','left like a doophead','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room','left the room'],
+      leftMsg = leftMessages[Math.floor(Math.random() * leftMessages.length)];
+
+    return leftMsg;
+  }
 
 });
 
