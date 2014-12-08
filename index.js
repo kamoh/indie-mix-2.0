@@ -26,8 +26,11 @@ io.on('connection', function(socket){
     console.log('message: ' + msg);
   });
   socket.on('name change', function(defaultName, newName){
+    console.log('=== old client list was: ' + allClients);
     updateServerUserList(defaultName, newName, allClients);
-    console.log('roll call updated');
+    socket.name = newName;
+    console.log('=== new client list is: ' + allClients);
+    io.emit('someone name changed', defaultName, newName);
   });
   socket.on('disconnect', function(){
     console.log(socket.name + ' has discon7nected');
@@ -53,22 +56,14 @@ io.on('connection', function(socket){
 
   // Not in use - name change form disabled
 
-  // function updateServerUserList(oldName, newName, clientList) {
-  //   console.log('started server user list function');
-  //   console.log('client list: ' + clientList.toString());
-  //   for (var i = 0; i < clientList.length; i++) {
-  //     console.log('in for looop');
-  //     console.log('oldname: '+ oldName)
-  //     console.log('newname: '+ newName)
-  //     if (oldName === clientList[i]) {
-  //       clientList[i] = newName;
-  //       console.log('oldname: '+ oldName)
-  //       console.log('newname: '+ newName)
-  //       console.log('clientList: '+ clientList)
-  //     };
-  //   }
-  //   updateClientUserList(clientList);
-  // };
+  function updateServerUserList(oldName, newName, clientList) {
+    for (var i = 0; i < clientList.length; i++) {
+      if (oldName === clientList[i]) {
+        clientList[i] = newName;
+      };
+    }
+    updateClientUserList(clientList);
+  };
 
   function updateClientUserList(clientList){
     io.sockets.emit('sync user list', clientList);

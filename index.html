@@ -34,7 +34,7 @@
       border: 0;
       width: 10%;
       margin-right: .4%;
-      visibility: hidden;
+      /*visibility: hidden;*/
     }
     form button { 
       width: 5%; 
@@ -102,6 +102,10 @@
         appendMessage("li class='italic'", name + " entered the room");
       });
         
+      socket.on('someone name changed', function(oldName, newName){
+        appendMessage("li class='italic'", oldName + ' is now known as ' + newName);
+      })
+
       // Update user list using the server's user list
 
       socket.on('sync user list', function(nameListFromServer){
@@ -113,33 +117,23 @@
         }
       });
 
-      // Add name to roll call box
-      // Currently unused - disabled the change name input
+      // Submitting the form
 
-      // $('#roll-call').append('<li>' + defaultName + '</li>')
       $('form').submit(function(){
         var msg = $('#m').val(),
-            name;
-        // If user specified a name, use that
-        if ($('#name').val() !== '') {
-          name = $("#name").val() + ": ";
+            newName = $('#name').val();
+        if (msg.length != 0) {  
+          socket.emit('chat message', defaultName + ': ' + msg);
+          console.log("emitted message '" + msg + "'");
+          $('#m').val('');
         } else {
-        // If user didn't specify a name, use the generated one
-          name = defaultName + ": ";
-        }
-        socket.emit('chat message', name + msg);
-        console.log("emitted message '" + msg + "'");
-        $('#m').val('');
+          socket.emit('name change', defaultName, newName);
+          defaultName = newName;
+          $('#name').val('');
+        };
+
         return false;
       });
-
-      // Name management for the roll call box when changing names
-
-      $('#name').change(function(){
-        var newName = $('#name').val();
-        socket.emit('name change', defaultName, newName);
-        defaultName = newName;
-      })
 
       // Emitter for sending chat messages
 
@@ -148,26 +142,12 @@
         appendMessage('li', msg);
       });
 
+      // Add messages to the chat
+
       function appendMessage(li_style, msg){
         $('#messages').append($('<' + li_style + '>').text(msg));
         document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
       };
-
-      // Propagate name changes to other users
-      // Not in use - name change form disabled for now
-
-      socket.on('name change', function(oldName, replaceName){
-        var $lis = $('#roll-call li'); 
-        console.log("in change function");
-        for (var i = 0; i < $lis.length; i++) {
-          console.log('looping through lis: ' + i);
-          if ($lis.eq(i).text() === oldName) {
-            console.log('replacing ' + oldName + ' with ' + replaceName);
-            $lis.eq(i).remove();
-          }
-        }
-        $('#roll-call').append('<li>' + replaceName + '</li>')
-      });
 
       // When a user leaves the chat
 
