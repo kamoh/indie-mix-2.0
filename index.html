@@ -117,23 +117,32 @@
         }
       });
 
-      // Submitting the form
+      // Form submission handler
 
       $('form').submit(function(){
         var msg = $('#m').val(),
             newName = $('#name').val();
         if (msg.length != 0) {  
-          socket.emit('chat message', defaultName + ': ' + msg);
-          console.log("emitted message '" + msg + "'");
-          $('#m').val('');
+          submitMessageToServer(msg, newName);
         } else {
-          socket.emit('name change', defaultName, newName);
-          defaultName = newName;
-          $('#name').val('');
+          submitNameChangeToServer(defaultName, newName);
         };
 
         return false;
+
       });
+
+      function submitMessageToServer(msg, newName) {
+        socket.emit('chat message', defaultName + ': ' + msg);
+        console.log("emitted message '" + msg + "'");
+        $('#m').val('');
+      }
+
+      function submitNameChangeToServer(defaultName, newName) {
+        socket.emit('name change', defaultName, newName);
+        defaultName = newName;
+        $('#name').val('');
+      }
 
       // Emitter for sending chat messages
 
