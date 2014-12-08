@@ -122,11 +122,12 @@
       $('form').submit(function(){
         var msg = $('#m').val(),
             newName = $('#name').val();
-        if (msg.length != 0) {  
+        if (msg.length > 0) {  
           submitMessageToServer(msg, newName);
-        } else {
+        } else if (newName.length > 0) {
           submitNameChangeToServer(defaultName, newName);
-        };
+          defaultName = newName;
+        } else {};
 
         return false;
 
@@ -140,7 +141,6 @@
 
       function submitNameChangeToServer(defaultName, newName) {
         socket.emit('name change', defaultName, newName);
-        defaultName = newName;
         $('#name').val('');
       }
 

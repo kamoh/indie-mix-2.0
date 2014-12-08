@@ -54,8 +54,6 @@ io.on('connection', function(socket){
     console.log('client list after update: ' + clientList);
   };
 
-  // Not in use - name change form disabled
-
   function updateServerUserList(oldName, newName, clientList) {
     for (var i = 0; i < clientList.length; i++) {
       if (oldName === clientList[i]) {
