@@ -122,18 +122,27 @@
       $('form').submit(function(){
         var msg = $('#m').val(),
             newName = $('#name').val();
-        if (msg.length != 0) {  
-          socket.emit('chat message', defaultName + ': ' + msg);
-          console.log("emitted message '" + msg + "'");
-          $('#m').val('');
-        } else {
-          socket.emit('name change', defaultName, newName);
+        if (msg.length > 0) {  
+          submitMessageToServer(msg, newName);
+        } else if (newName.length > 0) {
+          submitNameChangeToServer(defaultName, newName);
           defaultName = newName;
-          $('#name').val('');
-        };
+        } else {};
 
         return false;
       });
+
+      function submitMessageToServer(msg, newName) {
+        socket.emit('chat message', defaultName + ': ' + msg);
+        console.log("emitted message '" + msg + "'");
+        $('#m').val('');
+      }
+
+      function submitNameChangeToServer(defaultName, newName) {
+        socket.emit('name change', defaultName, newName);
+        $('#name').val('');
+      }
+
 
       // Emitter for sending chat messages
 
